@@ -1,0 +1,35 @@
+name: Mint Tokens
+
+on:
+  workflow_dispatch:
+    inputs:
+      amount:
+        description: "Amount of tokens to mint (without decimals)"
+        required: true
+      recipient:
+        description: "Recipient address (defaults to owner)"
+        required: false
+      confirm:
+        description: "Type 'MINT' to confirm"
+        required: true
+
+jobs:
+  mint:
+    runs-on: ubuntu-latest
+    if: github.event.inputs.confirm == 'MINT'
+    
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Mint tokens
+        env:
+          CONTRACT_ADDRESS: ${{ secrets.CONTRACT_ADDRESS }}
+          MINT_AMOUNT: ${{ github.event.inputs.amount }}
+          MINT_RECIPIENT: ${{ github.event.inputs.recipient }}
+          ALCHEMY_MAINNET_URL: ${{ secrets.ALCHEMY_MAINNET_URL }}
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+        run: npx hardhat run scripts/mint.js --network mainnet
