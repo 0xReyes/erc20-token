@@ -1,6 +1,19 @@
 require("@nomicfoundation/hardhat-toolbox");
 require("dotenv").config();
 
+// Validate required environment variables
+const requiredEnvVars = [
+  "ALCHEMY_SEPOLIA_URL",
+  "ALCHEMY_MAINNET_URL",
+  "DEPLOYER_PRIVATE_KEY",
+  "ETHERSCAN_API_KEY"
+];
+requiredEnvVars.forEach((varName) => {
+  if (!process.env[varName]) {
+    throw new Error(`Missing required environment variable: ${varName}`);
+  }
+});
+
 module.exports = {
   solidity: "0.8.20",
   networks: {
@@ -16,7 +29,8 @@ module.exports = {
     mainnet: {
       url: process.env.ALCHEMY_MAINNET_URL,
       accounts: [process.env.DEPLOYER_PRIVATE_KEY],
-      gasPrice: "auto"
+      gasPrice: "auto",
+      gas: 3000000
     }
   },
   etherscan: {
